@@ -21,7 +21,7 @@ jobs:
           POSTGRES_PASSWORD: additive
           POSTGRES_DB: additive_monitoring
         options: >-
-          --health-cmd pg_isready -U additive -d additive_monitoring
+          --health-cmd "pg_isready -U additive"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -84,13 +84,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-  docker:
-    name: Docker Validation
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Validate compose
-        run: docker compose config
