@@ -103,3 +103,16 @@ jobs:
 
       - name: Build
         run: npm run build
+  docker:
+    name: Docker Build Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Build backend image
+        run: docker build -t sensor-backend ./sensor
+
+      - name: Build frontend image
+        run: docker build -t sensor-frontend ./frontend
