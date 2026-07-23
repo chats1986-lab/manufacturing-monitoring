@@ -1,6 +1,6 @@
 # Manufacturing Monitoring System
 
-A production-style IoT monitoring platform for additive manufacturing factories.
+A production-style IoT monitoring platform for manufacturing factories.
 
 The system collects sensor data from industrial printers, exposes APIs for factory/printer/sensor information, provides metrics for monitoring, and runs with a complete Docker-based development environment.
 
