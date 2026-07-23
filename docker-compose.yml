@@ -35,6 +35,24 @@ services:
       postgres:
         condition: service_healthy
 
+  # Generates simulated industrial sensor readings
+  # Writes directly into PostgreSQL using Prisma
+  simulator:
+    build:
+      context: ./sensor
+      dockerfile: Dockerfile
+    container_name: sensor-simulator
+    restart: unless-stopped
+    env_file:
+      - ./sensor/.env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://additive:additive@postgres:5432/additive_monitoring
+    command: npm run simulate
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   frontend:
     build:
       context: ./frontend
