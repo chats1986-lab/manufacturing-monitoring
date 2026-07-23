@@ -1,0 +1,24 @@
+# Node
+**/node_modules/
+
+# Build
+**/dist/
+**/coverage/
+
+# Environment files
+sensor/.env
+frontend/.env
+
+# Logs
+*.log
+logs/
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Prisma generated client (only if you generate it into src)
+sensor/src/generated/prisma/
