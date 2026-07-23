@@ -1,22 +1,38 @@
 # Manufacturing Monitoring System
 
-A production-style IoT monitoring platform for manufacturing factories.
+A production-style full-stack IoT monitoring platform that simulates industrial manufacturing environments.
 
-The system collects sensor data from industrial printers, exposes APIs for factory/printer/sensor information, provides metrics for monitoring, and runs with a complete Docker-based development environment.
+The application ingests real-time sensor data from industrial printers, exposes REST APIs for factory, printer, and sensor management, and provides end-to-end observability using Prometheus, Grafana, Loki, and Promtail. The entire platform is containerized with Docker Compose, enabling a reproducible development environment and production-inspired deployment workflow.
 
 <img width="2752" height="1536" alt="IoT_Manufacturing_System_Architecture_Overview" src="https://github.com/user-attachments/assets/befd0f76-899c-492e-9f20-83c925ab32ca" />
 
+## Key Features
+
+- Full-stack manufacturing monitoring platform
+- RESTful API built with Node.js, TypeScript, and Express
+- PostgreSQL database with Prisma ORM and automated migrations
+- Simulated industrial sensor data generation
+- Metrics collection with Prometheus
+- Centralized logging using Loki and Promtail
+- Interactive Grafana dashboards for monitoring and visualization
+- Docker Compose development environment with automated database seeding
+- Production-inspired microservice architecture
+
+---
 
 ## Architecture
 
 Services:
 
+- Frontend (React + TypeScript + TanStack Router + TanStack Query)
 - Backend API (Node.js + TypeScript + Express)
-- PostgreSQL database
+- PostgreSQL Database
 - Prisma ORM
-- Prometheus metrics
-- Loki + Promtail logging
-- Grafana dashboards
+- Prometheus Metrics
+- Loki + Promtail Logging
+- Grafana Dashboards
+
+---
 
 ## Prerequisites
 
@@ -30,6 +46,8 @@ Optional for local development:
 - Node.js 22+
 - PostgreSQL 16+
 
+---
+
 ## Clone Repository
 
 ```bash
@@ -38,29 +56,33 @@ git clone https://github.com/chats1986-lab/manufacturing-monitoring.git
 cd manufacturing-monitoring
 ```
 
+---
+
 ## Environment Setup
 
-Create environment file:
+Create the backend environment file:
 
 ```bash
 cp sensor/.env.example sensor/.env
 ```
 
-The default Docker environment uses:
+The default Docker configuration uses:
 
-```
+```text
 DATABASE_URL=postgresql://additive:additive@postgres:5432/additive_monitoring
 ```
 
-Inside Docker, the database hostname is:
+Inside Docker Compose, the PostgreSQL hostname is:
 
-```
+```text
 postgres
 ```
 
-because Docker Compose provides service discovery.
+Docker Compose automatically provides service discovery between containers.
 
-## Start Application
+---
+
+## Start the Application
 
 Build and start all services:
 
@@ -68,23 +90,39 @@ Build and start all services:
 docker compose up --build
 ```
 
-This will:
+This will automatically:
 
 1. Start PostgreSQL
 2. Apply Prisma migrations
-3. Seed initial manufacturing data
+3. Seed the manufacturing database
 4. Build and start the backend API
-5. Start monitoring services
+5. Build and start the frontend
+6. Start Prometheus
+7. Start Loki and Promtail
+8. Start Grafana
 
-## Verify Backend
+---
 
-API:
+## Application URLs
+
+| Service | URL |
+|----------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:9000 |
+| Prometheus | http://localhost:9090 |
+| Grafana | http://localhost:3001 |
+
+---
+
+## Verify the Backend
+
+API Base URL:
 
 ```
 http://localhost:9000
 ```
 
-Factory endpoint:
+Example endpoint:
 
 ```bash
 curl http://localhost:9000/api/factories
@@ -98,9 +136,11 @@ Expected response:
 }
 ```
 
+---
+
 ## Database Access
 
-Enter PostgreSQL container:
+Connect to PostgreSQL inside Docker:
 
 ```bash
 docker exec -it postgres psql -U additive -d additive_monitoring
@@ -109,24 +149,26 @@ docker exec -it postgres psql -U additive -d additive_monitoring
 Useful queries:
 
 ```sql
-select * from factories;
+SELECT * FROM factories;
 
-select * from printers;
+SELECT * FROM printers;
 
-select * from sensors;
+SELECT * FROM sensors;
 
-select * from sensor_readings;
+SELECT * FROM sensor_readings;
 ```
+
+---
 
 ## Manual Database Operations
 
-Enter backend container:
+Access the backend container:
 
 ```bash
 docker exec -it sensor-backend sh
 ```
 
-Run Prisma commands:
+Run Prisma manually:
 
 ```bash
 npx prisma migrate deploy
@@ -134,9 +176,11 @@ npx prisma migrate deploy
 npx prisma db seed
 ```
 
-Normally these commands are executed automatically during container startup.
+These commands are normally executed automatically during container startup.
 
-## Local Development Without Docker
+---
+
+## Local Development
 
 Install dependencies:
 
@@ -146,23 +190,25 @@ cd sensor
 npm install
 ```
 
-Generate Prisma client:
+Generate Prisma Client:
 
 ```bash
 npx prisma generate
 ```
 
-Run migrations:
+Run database migrations:
 
 ```bash
 npx prisma migrate dev
 ```
 
-Start development server:
+Start the development server:
 
 ```bash
 npm run dev
 ```
+
+---
 
 ## Monitoring
 
@@ -175,39 +221,43 @@ http://localhost:9090
 Grafana:
 
 ```
-http://localhost:3000
+http://localhost:3001
 ```
+
+---
 
 ## Project Structure
 
-```
+```text
 manufacturing-monitoring/
 
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   └── Dockerfile
+│
 ├── sensor/
 │   ├── prisma/
-│   │   ├── schema.prisma
-│   │   └── seed.ts
-│   │
 │   ├── src/
-│   │   ├── database/
-│   │   ├── routes/
-│   │   └── index.ts
-│   │
 │   ├── Dockerfile
 │   └── package.json
 │
+├── prometheus/
+├── docker/
 ├── docker-compose.yml
 └── README.md
 ```
 
+---
+
 ## Seed Data
 
-The initial database contains:
+The initial dataset includes:
 
 - 4 manufacturing factories
 - 10 industrial printers
 - 40 sensors
-- Sample sensor readings
+- Sample sensor readings for monitoring and visualization
 
 Factories:
 
@@ -216,29 +266,31 @@ Factories:
 - Advanced Robotics Factory (Brisbane)
 - Aero Components Manufacturing (Perth)
 
+---
+
 ## Troubleshooting
 
-### Prisma cannot connect to postgres
+### Prisma cannot connect to PostgreSQL
 
-If running locally:
+Check your environment configuration:
 
 ```bash
 grep DATABASE_URL sensor/.env
 ```
 
-For Docker:
+Docker:
 
-```
+```text
 postgresql://additive:additive@postgres:5432/additive_monitoring
 ```
 
-For local PostgreSQL:
+Local PostgreSQL:
 
-```
+```text
 postgresql://additive:additive@localhost:5432/additive_monitoring
 ```
 
-### Rebuild everything
+### Rebuild the environment
 
 ```bash
 docker compose down
@@ -246,7 +298,7 @@ docker compose down
 docker compose up --build
 ```
 
-### Reset database
+### Reset the database
 
 ```bash
 docker compose down -v
@@ -254,9 +306,9 @@ docker compose down -v
 docker compose up --build
 ```
 
-## Development Workflow
+---
 
-Normal workflow:
+## Development Workflow
 
 ```bash
 git pull
@@ -264,7 +316,7 @@ git pull
 docker compose up --build
 ```
 
-After schema changes:
+After modifying the Prisma schema:
 
 ```bash
 npx prisma migrate dev
