@@ -20,8 +20,10 @@ jobs:
           POSTGRES_USER: additive
           POSTGRES_PASSWORD: additive
           POSTGRES_DB: additive_monitoring
+        ports:
+          - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U additive"
+          --health-cmd "pg_isready -U additive -d additive_monitoring"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
@@ -31,7 +33,7 @@ jobs:
         working-directory: sensor
 
     env:
-      DATABASE_URL: postgresql://additive:additive@postgres:5432/additive_monitoring
+      DATABASE_URL: postgresql://additive:additive@localhost:5432/additive_monitoring
 
     steps:
       - name: Checkout repository
@@ -50,7 +52,7 @@ jobs:
       - name: Wait for PostgreSQL
         run: |
           for i in {1..30}; do
-            if pg_isready -h postgres -U additive -d additive_monitoring; then
+            if pg_isready -h localhost -U additive -d additive_monitoring; then
               echo "PostgreSQL is ready"
               exit 0
             fi
