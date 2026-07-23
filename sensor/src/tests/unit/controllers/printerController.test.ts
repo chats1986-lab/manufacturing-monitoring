@@ -1,12 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { PrinterController } from "../../../controllers/printerController.js";
-import type { Request, Response } from "express";
 
 describe("PrinterController", () => {
   it("returns all printers", async () => {
-    const printers = [{ id: "1", name: "Printer A" }];
-    const printerId = "1";
-
     const dashboard = {
       printer: { id: "1", name: "Printer A" },
       sensors: [{ id: "s1" }],
@@ -17,20 +13,28 @@ describe("PrinterController", () => {
     };
 
     const controller = new PrinterController(mockPrinterService as any);
+
     const req = {
       params: {
         printerId: "1",
       },
-    } as any as Request;
+      log: {
+        info: vi.fn(),
+        error: vi.fn(),
+      },
+    } as any;
+
     const res = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    } as any as Response;
+    } as any;
 
     await controller.getDashboard(req, res);
 
     expect(mockPrinterService.getDashboard).toHaveBeenCalledOnce();
+
     expect(res.status).toHaveBeenCalledWith(200);
+
     expect(res.json).toHaveBeenCalledWith({
       message: "Printer retrieved successfully",
       data: dashboard,
