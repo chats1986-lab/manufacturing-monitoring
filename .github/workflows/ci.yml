@@ -13,9 +13,27 @@ jobs:
     name: Backend Build and Test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: additive
+          POSTGRES_PASSWORD: additive
+          POSTGRES_DB: additive_monitoring
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready -U additive -d additive_monitoring
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         working-directory: sensor
+
+    env:
+      DATABASE_URL: postgresql://additive:additive@localhost:5432/additive_monitoring
 
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +47,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+
+      - name: Seed database
+        run: npx prisma db seed
 
       - name: Build
         run: npm run build
