@@ -4,6 +4,9 @@ A production-style IoT monitoring platform for additive manufacturing factories.
 
 The system collects sensor data from industrial printers, exposes APIs for factory/printer/sensor information, provides metrics for monitoring, and runs with a complete Docker-based development environment.
 
+<img width="2752" height="1536" alt="IoT_Manufacturing_System_Architecture_Overview" src="https://github.com/user-attachments/assets/befd0f76-899c-492e-9f20-83c925ab32ca" />
+
+
 ## Architecture
 
 Services:
